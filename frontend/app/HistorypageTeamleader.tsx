@@ -9,8 +9,8 @@ import {
   RefreshControl,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const API_BASE_URL = "http://192.168.1.33:8000";
+// import API_BASE_URL from "../config";
+const API_BASE_URL = "http://192.168.1.24:8000";
 
 // ✅ Format date helper
 const formatDate = (dateString: string) => {

@@ -377,6 +377,11 @@ const SignUpScreen = () => {
                   </TouchableOpacity>
                 </View>
 
+                {/* Password Requirements Hint */}
+                <Text style={styles.hintText}>
+                  Password must be at least 8 characters with uppercase, lowercase, and a digit
+                </Text>
+
                 {/* Department Picker */}
                 <View style={[styles.inputContainer, isFocused.department && styles.inputFocused]}>
                   <Picker
@@ -516,6 +521,13 @@ const styles = StyleSheet.create({
   loginText: { color: 'rgba(255, 255, 255, 0.8)' },
   loginLink: { color: 'white', fontWeight: 'bold' },
   getOtpText: { color: 'black', fontWeight: 'bold', fontSize: 12 },
+  hintText: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 12,
+    marginBottom: 15,
+    marginTop: -10,
+    paddingHorizontal: 5,
+  },
 });
 
 export default SignUpScreen;

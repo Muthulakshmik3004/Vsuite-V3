@@ -150,6 +150,15 @@ const EmployeeInterface = () => {
         </TouchableOpacity>
       </View>
 
+      <View style={styles.buttonContainer}>
+        <View style={styles.iconWrapper}>
+          <Image source={require('../assets/images/requests6.png')} style={styles.icon} />
+        </View>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/payroll')}>
+          <Text style={styles.buttonText}>Payroll</Text>
+        </TouchableOpacity>
+      </View>
+
       {currentUser && currentUser.department === 'Hardware' && (
         <View style={styles.buttonContainer}>
           <View style={styles.iconWrapper}>

@@ -8,9 +8,9 @@ const profileIcon = require("../assets/images/profile10.png");
 const userMngmntIcon = require("../assets/images/user mngmnt.jpeg");
 const dashboardIcon = require("../assets/images/dashboard (2).png");
 const requestsIcon = require("../assets/images/requests.jpeg");
-const timesheetIcon = require("../assets/images/dashboard (2).png"); // Using dashboard icon for now
+const timesheetIcon = require("../assets/images/dashboard (2).png");
 const workModeIcon = require("../assets/images/work-mode.jpeg");
-const jobsheetIcon = require("../assets/images/dashboard (2).png"); // Using dashboard icon for jobsheets
+const jobsheetIcon = require("../assets/images/dashboard (2).png");
 
 export default function AdminInt() {
   const router = useRouter();
@@ -23,6 +23,7 @@ export default function AdminInt() {
     { title: "Jobsheet", path: "/AdminJobsheetStatus", icon: <Image source={jobsheetIcon} style={{ width: 48, height: 48, borderRadius: 10 }} /> },
     { title: "Requests", path: "/AdminRequest", icon: <Image source={requestsIcon} style={{ width: 48, height: 48, borderRadius: 10 }} /> },
     { title: "Work Mode Management", path: "/adminWorkMode", icon: <Image source={workModeIcon} style={{ width: 48, height: 48, borderRadius: 10 }} /> },
+    { title: "Payroll", path: "/adminPayroll", icon: <Image source={dashboardIcon} style={{ width: 48, height: 48, borderRadius: 10 }} /> },
   ];
 
   return (

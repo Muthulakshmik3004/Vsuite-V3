@@ -17,7 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import API_BASE_URL from "../config";
 
 
-// const API_BASE_URL = "http://192.168.1.33:8000";
+// const API_BASE_URL = "://vsuite-backend.vienstereoptic.com";
 
 
 const formatDate = (dateString) => {

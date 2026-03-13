@@ -1,3 +1,7 @@
+set "JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-17"
+set "PATH=%JAVA_HOME%\bin;%PATH%"
+
+
 @rem
 @rem Copyright 2015 the original author or authors.
 @rem

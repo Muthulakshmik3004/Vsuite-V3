@@ -2,41 +2,44 @@
   "expo": {
     "name": "EmployeeApp",
     "slug": "EmployeeApp",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/whatsapp5.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
+
     "splash": {
       "image": "./assets/whatsapp5.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+
     "ios": {
+      "supportsTablet": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "We use your location to verify you are at the office for attendance.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "We use your location to verify you are at the office for attendance."
-      },
-      "supportsTablet": true
+      }
     },
+
     "android": {
+      "package": "com.vienstereoptic.EmployeeApp",
       "permissions": [
-        "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION"
+        "ACCESS_COARSE_LOCATION"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/whatsapp5.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "usesCleartextTraffic": true,
-      "package": "com.vienstereoptic.EmployeeApp"
+      "usesCleartextTraffic": true
     },
+
     "web": {
       "favicon": "./assets/whatsapp5.png"
     },
+
     "plugins": [
       "expo-router",
       [
@@ -47,12 +50,14 @@
       ],
       "expo-asset"
     ],
+
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "8acc278c-b52f-4860-b6b2-683d4f56c110"
+        "projectId": "5ae973aa-d4bf-4c46-bc90-3e9bb33d9288"
       }
     },
-    "owner": "solomon_king"
+
+    "owner": "lakshaa"
   }
 }

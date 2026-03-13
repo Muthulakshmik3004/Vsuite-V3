@@ -98,10 +98,26 @@ export default function TeamLeaderRequests() {
     fetchRequests();
   }, [fetchRequests]);
 
+  // 🔹 Check if Optional Holiday
+  const isOptionalHoliday = (item: any) => {
+    return (item.leave_type || "").toLowerCase() === "optional";
+  };
+
   // 🔹 Render Leave Request
-  const renderLeaveItem = ({ item }: any) => (
+  const renderLeaveItem = ({ item }: any) => {
+    const optional = isOptionalHoliday(item);
+    
+    return (
     <View style={styles.card}>
-      <Text style={styles.cardTitle}>{item.user_name}</Text>
+      <View style={styles.cardHeader}>
+        <Text style={styles.cardTitle}>{item.user_name}</Text>
+        {/* Optional Holiday Badge */}
+        {optional && (
+          <View style={styles.optionalBadge}>
+            <Text style={styles.optionalBadgeText}>Optional Holiday</Text>
+          </View>
+        )}
+      </View>
       <Text style={styles.cardSub}>{item.department}</Text>
       <Text style={styles.cardText}>
         From: {item.from_date} → To: {item.to_date}
@@ -114,23 +130,32 @@ export default function TeamLeaderRequests() {
         Status: {item.status}
       </Text>
 
-      {/* Action Buttons */}
-      <View style={styles.actionRow}>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: "green" }]}
-          onPress={() => handleAction(item.id, "leave", "accepted")}
-        >
-          <Text style={styles.buttonText}>Accept</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: "red" }]}
-          onPress={() => handleAction(item.id, "leave", "rejected")}
-        >
-          <Text style={styles.buttonText}>Reject</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Action Buttons - Only show for non-Optional Holidays */}
+      {!optional ? (
+        <View style={styles.actionRow}>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: "green" }]}
+            onPress={() => handleAction(item.id, "leave", "accepted")}
+          >
+            <Text style={styles.buttonText}>Accept</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: "red" }]}
+            onPress={() => handleAction(item.id, "leave", "rejected")}
+          >
+            <Text style={styles.buttonText}>Reject</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View style={styles.actionRow}>
+          <Text style={styles.autoApprovedText}>
+            Requires Admin Approval Only
+          </Text>
+        </View>
+      )}
     </View>
   );
+  };
 
   // 🔹 Render Permission Request
   const renderPermissionItem = ({ item }: any) => (
@@ -233,6 +258,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
   },
+  cardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 6 },
   cardTitle: { fontSize: 16, fontWeight: "bold", color: "#222" },
   cardSub: { fontSize: 14, color: "#666", marginBottom: 6 },
   cardText: { fontSize: 14, marginBottom: 4, color: "#333" },
@@ -257,4 +283,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: { color: "#fff", fontWeight: "bold" },
+  // Optional Holiday Badge Styles
+  optionalBadge: {
+    backgroundColor: "#9c27b0", // Purple color
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  optionalBadgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+  autoApprovedText: {
+    color: "#9c27b0",
+    fontSize: 12,
+    fontWeight: "bold",
+    textAlign: "center",
+    flex: 1,
+  },
 });

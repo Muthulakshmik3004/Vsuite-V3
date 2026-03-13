@@ -95,12 +95,28 @@ const Requests = () => {
     setLoading(false);
   };
 
-  const renderItem = ({ item }) => (
+  // Check if leave is Optional Holiday
+  const isOptionalHoliday = (item) => {
+    return (item.leave_type || "").toLowerCase() === "optional";
+  };
+
+  const renderItem = ({ item }) => {
+    const optional = isOptionalHoliday(item);
+    
+    return (
     <View style={styles.itemContainer}>
       <View style={styles.itemHeader}>
-        <Text style={styles.itemDate}>
-          {new Date(item.created_at || item.from_date).toLocaleDateString()}
-        </Text>
+        <View style={styles.itemHeaderLeft}>
+          <Text style={styles.itemDate}>
+            {new Date(item.created_at || item.from_date).toLocaleDateString()}
+          </Text>
+          {/* Optional Holiday Badge */}
+          {optional && (
+            <View style={styles.optionalBadge}>
+              <Text style={styles.optionalBadgeText}>Optional Holiday</Text>
+            </View>
+          )}
+        </View>
         {item.time && <Text style={styles.itemTime}>{item.time}</Text>}
       </View>
 
@@ -125,6 +141,7 @@ const Requests = () => {
       </Text>
     </View>
   );
+  };
 
   const currentData =
     requestType === 'Permissions'
@@ -211,6 +228,7 @@ const styles = StyleSheet.create({
   list: { flex: 1 },
   itemContainer: { backgroundColor: 'rgba(255, 255, 255, 0.2)', padding: 15, borderRadius: 10, marginBottom: 10 },
   itemHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 },
+  itemHeaderLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   itemDate: { color: 'white', fontSize: 14 },
   itemTime: { color: 'white', fontSize: 16, fontWeight: 'bold' },
   itemReason: { color: 'white', fontSize: 14, marginVertical: 5 },
@@ -221,6 +239,19 @@ const styles = StyleSheet.create({
   pending: { color: 'yellow' },
   noDataText: { color: 'white', fontSize: 16, textAlign: 'center', marginTop: 20 },
   errorText: { color: 'red', textAlign: 'center', marginBottom: 10 },
+  // Optional Holiday Badge Styles
+  optionalBadge: {
+    backgroundColor: '#9c27b0', // Purple color
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+  optionalBadgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
 });
 
 export default Requests;

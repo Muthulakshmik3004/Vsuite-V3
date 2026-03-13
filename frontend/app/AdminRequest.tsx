@@ -174,10 +174,27 @@ export default function AdminRequest() {
     mode === "requests" ? fetchRequests() : fetchHistory();
   };
 
+  // ------------------ CHECK IF OPTIONAL HOLIDAY ------------------
+  const isOptionalHoliday = (item: any) => {
+    // Check for leave_type field or other indicators
+    return (item.leave_type || "").toLowerCase() === "optional";
+  };
+
   // ------------------ RENDER ------------------
-  const renderItem = (item: any) => (
+  const renderItem = (item: any) => {
+    const optional = isOptionalHoliday(item);
+    
+    return (
     <Animated.View style={[styles.card, { transform: [{ scale: scaleAnim }] }]}>
-      <Text style={styles.cardSub}>{item.department || "-"}</Text>
+      <View style={styles.cardHeader}>
+        <Text style={styles.cardSub}>{item.department || "-"}</Text>
+        {/* Optional Holiday Badge */}
+        {optional && (
+          <View style={styles.optionalBadge}>
+            <Text style={styles.optionalBadgeText}>Optional Holiday</Text>
+          </View>
+        )}
+      </View>
       <Text style={styles.cardText}>Name: {item.user_name || item.user || "-"}</Text>
 
       {requestType === "leave" ? (
@@ -215,18 +232,40 @@ export default function AdminRequest() {
         </>
       )}
 
+      {/* Only show approve/reject for Admin, hide for Optional Holiday */}
       {mode === "requests" && (
         <View style={styles.actionRow}>
-          <TouchableOpacity style={[styles.button, { backgroundColor: "#00e676" }]} onPress={() => handleAction(item.id, requestType, "approved")}>
+          {/* Admin can approve Optional Holidays */}
+          <TouchableOpacity 
+            style={[styles.button, { backgroundColor: "#00e676" }]} 
+            onPress={() => {
+              if (optional) {
+                Alert.alert(
+                  "Approve Optional Holiday", 
+                  `Approve Optional Holiday for ${item.user_name}? This will count towards their 2 annual optional holidays.`,
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    { text: "Approve", onPress: () => handleAction(item.id, requestType, "approved") },
+                  ]
+                );
+              } else {
+                handleAction(item.id, requestType, "approved");
+              }
+            }}
+          >
             <Text style={styles.buttonText}>Approve</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, { backgroundColor: "#ff5252" }]} onPress={() => handleAction(item.id, requestType, "rejected")}>
+          <TouchableOpacity 
+            style={[styles.button, { backgroundColor: "#ff5252" }]} 
+            onPress={() => handleAction(item.id, requestType, "rejected")}
+          >
             <Text style={styles.buttonText}>Reject</Text>
           </TouchableOpacity>
         </View>
       )}
     </Animated.View>
   );
+  };
 
   const dataToShow = mode === "requests"
     ? requests[requestType + "s"].filter((item) => (item.status || "").toLowerCase() === "pending")
@@ -288,7 +327,8 @@ const styles = StyleSheet.create({
   activeTab: { backgroundColor: "rgba(255,255,255,0.5)" },
   tabText: { color: "#fff", fontWeight: "bold", fontSize: 14 },
   card: { backgroundColor: "rgba(255,255,255,0.2)", padding: 15, borderRadius: 10, marginBottom: 10 },
-  cardSub: { fontSize: 14, color: "#fff", marginBottom: 6, fontWeight: "bold" },
+  cardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 6 },
+  cardSub: { fontSize: 14, color: "#fff", fontWeight: "bold" },
   cardText: { fontSize: 14, marginBottom: 4, color: "#fff" },
   status: { fontSize: 14, fontWeight: "bold", marginTop: 6 },
   actionRow: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
@@ -296,4 +336,16 @@ const styles = StyleSheet.create({
   buttonText: { color: "#fff", fontWeight: "bold" },
   noDataText: { color: "#fff", fontSize: 16, textAlign: "center", marginTop: 20 },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
+  // Optional Holiday Badge Styles
+  optionalBadge: {
+    backgroundColor: "#9c27b0", // Purple color
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  optionalBadgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
 });
