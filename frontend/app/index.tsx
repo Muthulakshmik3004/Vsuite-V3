@@ -72,6 +72,10 @@ export default function App() {
   }
   };
 
+  const handleLogoPress = () => {
+    router.push("/bigadmin/login"); // Navigate to big admin login
+  };
+
   const vStyle = { transform: [{ translateY: vAnim }] };
   const sStyle = { transform: [{ translateY: sAnim }], opacity: sOpacity };
   const nameStyle = { opacity: nameOpacity };
@@ -96,9 +100,9 @@ export default function App() {
 
   return (
     <View style={styles.finalContainer}>
-      <View style={styles.header}>
+      <TouchableOpacity style={styles.header} onPress={handleLogoPress}>
         <Image source={require('../assets/images/vsLogo.png')} style={styles.headerLogo} />
-      </View>
+      </TouchableOpacity>
       <ImageBackground
         source={require('../assets/images/pinkcolor.png')}
         style={styles.contentContainer}

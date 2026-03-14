@@ -125,6 +125,7 @@ const UserManagement = () => {
                 <Text style={styles.detail}>Email: {user.email}</Text>
                 <Text style={styles.detail}>Role: {user.role}</Text>
                 <Text style={styles.detail}>Department: {user.department}</Text>
+                <Text style={styles.detail}>Phone: {user.phone}</Text>
 
                 {/* Remove Button */}
                 <TouchableOpacity onPress={() => handleRemoveUser(user)}>
@@ -148,6 +149,7 @@ const UserManagement = () => {
                 <Text style={styles.detail}>Email: {user.email}</Text>
                 <Text style={styles.detail}>Role: {user.role}</Text>
                 <Text style={styles.detail}>Department: {user.department}</Text>
+                <Text style={styles.detail}>Phone: {user.phone}</Text>
 
                 <Text style={styles.removed}>
                   ❌ Removed by {user.removed_by} at {user.removed_at}

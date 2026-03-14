@@ -33,6 +33,7 @@ const SignUpScreen = () => {
   const [employeeId, setEmployeeId] = useState('');
   const [role, setRole] = useState("employee");
   const [gmail, setGmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [department, setDepartment] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -41,7 +42,12 @@ const SignUpScreen = () => {
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
-  const [isOtpLoading, setIsOtpLoading] = useState(false);
+  const [phoneOtp, setPhoneOtp] = useState('');
+  const [phoneOtpSent, setPhoneOtpSent] = useState(false);
+  const [phoneOtpVerified, setPhoneOtpVerified] = useState(false);
+  const [emailOtpLoading, setEmailOtpLoading] = useState(false);
+const [phoneOtpLoading, setPhoneOtpLoading] = useState(false);
+// const [isOtpLoading, setIsOtpLoading] = useState(false);
   const [isVerifyLoading, setIsVerifyLoading] = useState(false);
   const [isSignupLoading, setIsSignupLoading] = useState(false);
 
@@ -53,11 +59,15 @@ const SignUpScreen = () => {
       setRole('');
       setDepartment('');
       setGmail('');
+      setPhone('');
       setPassword('');
       setConfirmPassword('');
       setOtp('');
+      setPhoneOtp('');
       setOtpSent(false);
       setOtpVerified(false);
+      setPhoneOtpSent(false);
+      setPhoneOtpVerified(false);
     }, [])
   );
 
@@ -67,7 +77,9 @@ const SignUpScreen = () => {
     role: false,
     department: false,
     gmail: false,
+    phone: false,
     otp: false,
+    phoneOtp: false,
     password: false,
     confirmPassword: false,
   });
@@ -137,45 +149,42 @@ const SignUpScreen = () => {
 
   // Step 1: Send OTP
   const handleGetOtp = async () => {
-  if (!gmail || !gmail.includes('@gmail.com')) {
-    Alert.alert('Error', 'Enter a valid Gmail address');
-    return;
-  }
-
-  setIsOtpLoading(true);
-
-  try {
-    const res = await API.post('', {
-      step: 'send_otp',
-      name,
-      emp_id: employeeId,
-      role,
-      gmail,
-      department,
-      password,
-      confirm_password: confirmPassword,
-    });
-
-    if (res.status === 200) {
-      Alert.alert('Success', res.data.message || 'OTP sent to your email');
-      setOtpSent(true);
-    } else {
-      Alert.alert('Error', res.data.error || 'Failed to send OTP');
+    if (!gmail || !gmail.includes('@gmail.com')) {
+      Alert.alert('Error', 'Enter a valid Gmail address');
+      return;
     }
-  } catch (error: any) {
 
-    if (error.response?.data?.error) {
-      Alert.alert('Error', error.response.data.error); // ✅ backend error (e.g. Email already registered)
-    } else {
-      Alert.alert('Error', 'Server error while sending OTP');
+    setEmailOtpLoading(true);
+
+    try {
+      const res = await API.post('', {
+        step: 'send_otp',
+        name,
+        emp_id: employeeId,
+        role,
+        gmail,
+        department,
+        password,
+        confirm_password: confirmPassword,
+      });
+
+      if (res.status === 200) {
+        Alert.alert('Success', res.data.message || 'OTP sent to your email');
+        setOtpSent(true);
+      } else {
+        Alert.alert('Error', res.data.error || 'Failed to send OTP');
+      }
+    } catch (error: any) {
+
+      if (error.response?.data?.error) {
+        Alert.alert('Error', error.response.data.error); // ✅ backend error (e.g. Email already registered)
+      } else {
+        Alert.alert('Error', 'Server error while sending OTP');
+      }
+    } finally {
+      setEmailOtpLoading(false);
     }
-  } finally {
-    setIsOtpLoading(false);
-  }
-};
-
-
-  
+  };
 
   // Step 2: Verify OTP
   const handleVerifyOtp = async () => {
@@ -192,7 +201,7 @@ const SignUpScreen = () => {
       });
 
       if (res.status === 200) {
-        Alert.alert('Success', 'OTP verified! Now set your password.');
+        Alert.alert('Success', 'OTP verified!');
         setOtpVerified(true);
       } else {
         Alert.alert('Error', res.data.error || 'Failed to verify OTP');
@@ -207,47 +216,129 @@ const SignUpScreen = () => {
     } finally {
       setIsVerifyLoading(false);
     }
+  };
 
+  // Step 1b: Send Phone OTP
+  const handleGetPhoneOtp = async () => {
+    if (!phone || phone.length !== 10 || !/^\d{10}$/.test(phone)) {
+      Alert.alert('Error', 'Please enter a valid 10-digit phone number');
+      return;
+    }
+
+    setPhoneOtpLoading(true);
+
+    try {
+      const res = await API.post('', {
+        step: 'send_phone_otp',
+        phone,
+        gmail,
+      });
+
+      if (res.status === 200) {
+        Alert.alert('Success', res.data.message || 'OTP sent to your phone');
+        setPhoneOtpSent(true);
+      } else {
+        Alert.alert('Error', res.data.error || 'Failed to send phone OTP');
+      }
+    } catch (error: any) {
+      if (error.response?.data?.error) {
+        Alert.alert('Error', error.response.data.error);
+      } else {
+        Alert.alert('Error', 'Server error while sending phone OTP');
+      }
+    } finally {
+      setPhoneOtpLoading(false);
+    }
+  };
+
+  // Step 2b: Verify Phone OTP
+  const handleVerifyPhoneOtp = async () => {
+    if (!phoneOtp) {
+      Alert.alert('Error', 'Please enter phone OTP');
+      return;
+    }
+    setIsVerifyLoading(true);
+    try {
+      const res = await API.post('', {
+        step: 'verify_phone_otp',
+        phone,
+        otp: parseInt(phoneOtp, 10),
+        gmail: gmail, // Send gmail to link with email session
+      });
+
+      if (res.status === 200) {
+        Alert.alert('Success', 'Phone OTP verified!');
+        setPhoneOtpVerified(true);
+      } else {
+        Alert.alert('Error', res.data.error || 'Failed to verify phone OTP');
+      }
+    } catch (error: any) {
+      console.log('Verify phone OTP error:', error.response?.data || error.message);
+      if (error.response && error.response.data.error) {
+        Alert.alert('Error', error.response.data.error);
+      } else {
+        Alert.alert('Error', 'Invalid phone OTP or server error');
+      }
+    } finally {
+      setIsVerifyLoading(false);
+    }
   };
 
   // Step 3: Signup
   const handleSignup = async () => {
-  if (password !== confirmPassword) {
-    Alert.alert('Error', 'Passwords do not match');
-    return;
-  }
-
-  setIsSignupLoading(true);
-  try {
-    const res = await API.post('', {
-      step: 'set_password',
-      gmail,
-      password,
-      confirm_password: confirmPassword,
-      name,           // ✅ Add name
-      emp_id: employeeId, // ✅ Add user_id
-      role,
-      department,
-    });
-
-    if (res.status === 200 || res.status === 201) {
-      Alert.alert('Success', 'Signup successful!');
-      router.push('/login');
-    } else {
-      Alert.alert('Error', res.data.error || 'Failed to signup');
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
     }
-  } catch (error: any) {
-  console.log('Signup error:', error.response?.data || error.message);
-  if (error.response && error.response.data.error) {
-    Alert.alert('Error', error.response.data.error); // backend error
-  } else {
-    Alert.alert('Error', 'Server error during signup');
-  }
-} finally {
-  setIsSignupLoading(false);
-}
 
-};
+    // Validate phone number
+    if (!phone || phone.length !== 10 || !/^\d{10}$/.test(phone)) {
+      Alert.alert('Error', 'Please enter a valid 10-digit phone number');
+      return;
+    }
+
+    // Check if both OTPs are verified
+    if (!otpVerified) {
+      Alert.alert('Error', 'Please verify your email OTP first');
+      return;
+    }
+
+    if (!phoneOtpVerified) {
+      Alert.alert('Error', 'Please verify your phone OTP first');
+      return;
+    }
+
+    setIsSignupLoading(true);
+    try {
+      const res = await API.post('', {
+        step: 'set_password',
+        gmail,
+        password,
+        confirm_password: confirmPassword,
+        name,           // ✅ Add name
+        emp_id: employeeId, // ✅ Add user_id
+        role,
+        department,
+        phone,          // ✅ Add phone number
+      });
+
+      if (res.status === 200 || res.status === 201) {
+        Alert.alert('Success', 'Signup successful!');
+        router.push('/login');
+      } else {
+        Alert.alert('Error', res.data.error || 'Failed to signup');
+      }
+    } catch (error: any) {
+      console.log('Signup error:', error.response?.data || error.message);
+      if (error.response && error.response.data.error) {
+        Alert.alert('Error', error.response.data.error); // backend error
+      } else {
+        Alert.alert('Error', 'Server error during signup');
+      }
+    } finally {
+      setIsSignupLoading(false);
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -312,11 +403,13 @@ const SignUpScreen = () => {
                 onChangeText={setGmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                textContentType="emailAddress"
+                autoComplete="email"
                 onFocus={getFocusHandler('gmail')}
                 onBlur={getBlurHandler('gmail')}
               />
-              <TouchableOpacity onPress={handleGetOtp} disabled={isOtpLoading}>
-                {isOtpLoading ? (
+              <TouchableOpacity onPress={handleGetOtp} disabled={emailOtpLoading}>
+                {emailOtpLoading ? (
                   <ActivityIndicator size="small" color="#0000ff" />
                 ) : (
                   <Text style={styles.getOtpText}>GET OTP</Text>
@@ -354,6 +447,62 @@ const SignUpScreen = () => {
               </>
             )}
 
+            {/* Phone Number - Only show after email OTP is verified */}
+            {otpVerified && (
+              <>
+                <View style={[styles.inputContainer, isFocused.phone && styles.inputFocused]}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Phone Number"
+                    placeholderTextColor="rgba(255, 255, 255, 0.7)"
+                    value={phone}
+                    onChangeText={setPhone}
+                    keyboardType="phone-pad"
+                    maxLength={10}
+                    onFocus={getFocusHandler('phone')}
+                    onBlur={getBlurHandler('phone')}
+                  />
+                  <TouchableOpacity onPress={handleGetPhoneOtp} disabled={phoneOtpLoading}>
+                    {phoneOtpLoading ? (
+                      <ActivityIndicator size="small" color="#0000ff" />
+                    ) : (
+                      <Text style={styles.getOtpText}>GET OTP</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+
+                {/* Phone OTP */}
+                {phoneOtpSent && !phoneOtpVerified && (
+                  <>
+                    <View style={[styles.inputContainer, isFocused.phoneOtp && styles.inputFocused]}>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="Enter Phone OTP"
+                        placeholderTextColor="rgba(255, 255, 255, 0.7)"
+                        value={phoneOtp}
+                        onChangeText={setPhoneOtp}
+                        keyboardType="number-pad"
+                        onFocus={getFocusHandler('phoneOtp')}
+                        onBlur={getBlurHandler('phoneOtp')}
+                      />
+                    </View>
+                    <TouchableOpacity onPress={handleVerifyPhoneOtp} disabled={isVerifyLoading}>
+                      <LinearGradient
+                        colors={['#f48fb1', '#c2185b']}
+                        style={styles.button}
+                      >
+                        {isVerifyLoading ? (
+                          <ActivityIndicator color="#fff" />
+                        ) : (
+                          <Text style={styles.buttonText}>Verify Phone OTP</Text>
+                        )}
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </>
+            )}
+
             {/* Password + Department + Confirm Password */}
             {otpVerified && (
               <>
@@ -376,11 +525,6 @@ const SignUpScreen = () => {
                     />
                   </TouchableOpacity>
                 </View>
-
-                {/* Password Requirements Hint */}
-                <Text style={styles.hintText}>
-                  Password must be at least 8 characters with uppercase, lowercase, and a digit
-                </Text>
 
                 {/* Department Picker */}
                 <View style={[styles.inputContainer, isFocused.department && styles.inputFocused]}>
@@ -521,13 +665,6 @@ const styles = StyleSheet.create({
   loginText: { color: 'rgba(255, 255, 255, 0.8)' },
   loginLink: { color: 'white', fontWeight: 'bold' },
   getOtpText: { color: 'black', fontWeight: 'bold', fontSize: 12 },
-  hintText: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 12,
-    marginBottom: 15,
-    marginTop: -10,
-    paddingHorizontal: 5,
-  },
 });
 
 export default SignUpScreen;
